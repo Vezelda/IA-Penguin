@@ -1,0 +1,6 @@
+id_cliente,nombre,correo_electronico,telefono,fecha_registro, ciudad, tipo_membresia
+152025,Anibal Cardozo,mfverypro@gmail.com,+595971662106,2022-01-01, luque, oro
+152026,Ivan Portillo,ivandejesus0303@gmail.com,5557654321,2022-01-02, asuncion, platino
+152027,Alfredo Cazal, alfredocazal85@gmail.com,+595959841,2022-01-02,lambare,bronce
+152024,Luis Jara,luisjar71@hotmail.com,+5959874665,2024-18-12,asuncion,oro
+152028,Jesus Medina,oncedeseptiembre11@gmail.com,+5959541871,2024-01-19,central,oro
