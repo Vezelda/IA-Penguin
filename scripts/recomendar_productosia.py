@@ -42,6 +42,7 @@ def recomendar_productos(cliente_id, compras_df, inventario_df):
 
     return productos_recomendados.head(10)
 
+
 if __name__ == "__main__":
     clientes_df, compras_df, inventario_df = cargar_datos()
     cliente_id = 1  # ID del cliente para el cual generar recomendaciones

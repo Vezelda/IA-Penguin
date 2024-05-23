@@ -86,6 +86,7 @@ def entrenar_modelo(modelo, X_train_tensor, y_train_tensor, criterion, optimizer
 
 entrenar_modelo(modelo, X_train_tensor, y_train_tensor, criterion, optimizer)
 
+
 # Ejemplo de recomendación de varios productos para un cliente
 X_cliente_ejemplo = X_test.iloc[0]  # Utilizamos el primer cliente de los datos de prueba como ejemplo
 productos_recomendados = recomendar_varios_productos(modelo, X_cliente_ejemplo, nombre_productos, n=5)
