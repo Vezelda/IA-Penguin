@@ -1,9 +1,10 @@
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-import pandas as pd
-from jinja2 import Template
-from recomendar_productos import recomendar_productos
+import smtplib  # Importa el módulo smtplib para enviar correos electrónicos usando el protocolo SMTP.
+from email.mime.multipart import MIMEMultipart  # Importa la clase MIMEMultipart del módulo email.mime.multipart para crear un mensaje de correo con partes múltiples.
+from email.mime.text import MIMEText  # Importa la clase MIMEText del módulo email.mime.text para crear partes de texto del mensaje de correo.
+import pandas as pd  # Importa la biblioteca pandas con el alias pd para manipulación y análisis de datos.
+from jinja2 import Template  # Importa la clase Template del módulo jinja2 para renderizar plantillas de texto.
+from recomendar_productos import recomendar_productos  # Importa la función recomendar_productos del módulo recomendar_productos para generar recomendaciones de productos personalizadas.
+
 
 def cargar_datos():
     # Cargar los datos desde los archivos CSV
