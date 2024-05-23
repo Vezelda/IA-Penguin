@@ -50,3 +50,4 @@ if __name__ == "__main__":
     clientes_df, compras_df, inventario_df = cargar_datos()
     frecuencia_compra, valor_medio_compra, productos_populares = analizar_habitos(clientes_df, compras_df, inventario_df)
     visualizar_datos(frecuencia_compra, valor_medio_compra, productos_populares)
+

@@ -15,4 +15,3 @@ if __name__ == "__main__":
     print("\nInventario:")
     print(inventario_df.head())
 print(clientes_df)
-
