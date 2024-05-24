@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recomendaciones de Productos</title>
 </head>
 <body>
     <h1>Recomendaciones de Productos</h1>
+    <p>{{ saludo }}</p>
     <ul>
         {% for producto in productos %}
-        <li>{{ producto }}</li>
+            <li>{{ producto }}</li>
         {% endfor %}
     </ul>
 </body>

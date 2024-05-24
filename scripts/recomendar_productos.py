@@ -5,33 +5,33 @@ import torch.optim as optim
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.model_selection import train_test_split
 
-# Cargar datos
+# Cargar datos desde archivos CSV
 compras_df = pd.read_csv("/home/penguin/Hackaton/data/compras.csv")
 inventario_df = pd.read_csv("/home/penguin/Hackaton/data/inventario.csv")
 
-# Preprocesamiento de datos
+# Función para preprocesar datos
 def preprocesar_datos(compras_df, inventario_df):
-    # Fusionar con el inventario para obtener el nombre de cada producto
+    # Fusionar datos de compras con información de inventario
     compras_agrupadas = compras_df.merge(inventario_df[['id_producto', 'nombre_producto']], on='id_producto')
     
-    # Codificar el nombre del producto como números
+    # Codificar nombres de productos como números
     encoder = LabelEncoder()
     compras_agrupadas['producto_encoded'] = encoder.fit_transform(compras_agrupadas['nombre_producto'])
     
-    # Escalar los datos
+    # Escalar la cantidad de productos comprados
     scaler = StandardScaler()
     compras_agrupadas[['cantidad']] = scaler.fit_transform(compras_agrupadas[['cantidad']])
     
-    # Dividir los datos en conjuntos de entrenamiento y prueba
+    # Dividir datos en conjuntos de entrenamiento y prueba
     X = compras_agrupadas[['id_cliente', 'cantidad']]
     y = compras_agrupadas['producto_encoded']
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     
     return X_train, X_test, y_train, y_test, encoder.classes_
 
-# Función para recomendar varios productos
+# Función para recomendar varios productos a un cliente
 def recomendar_varios_productos(modelo, X_cliente, nombre_productos, n=5):
-    # Convertir los datos del cliente a tensor
+    # Convertir datos del cliente a tensor
     X_tensor = torch.tensor(X_cliente.values, dtype=torch.float32)
     
     # Obtener las predicciones del modelo
@@ -54,7 +54,7 @@ class RecomendadorProductos(nn.Module):
         out = self.fc(x)
         return out
 
-# Preprocesamiento de datos
+# Preprocesar datos
 X_train, X_test, y_train, y_test, nombre_productos = preprocesar_datos(compras_df, inventario_df)
 
 # Convertir datos a tensores PyTorch
@@ -70,11 +70,11 @@ output_dim = len(nombre_productos)
 # Crear instancia del modelo
 modelo = RecomendadorProductos(input_dim, output_dim)
 
-# Función de pérdida y optimizador
+# Definir función de pérdida y optimizador
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(modelo.parameters(), lr=0.001)
 
-# Entrenamiento del modelo
+# Entrenar el modelo
 def entrenar_modelo(modelo, X_train_tensor, y_train_tensor, criterion, optimizer, epochs=10):
     for epoch in range(epochs):
         optimizer.zero_grad()
@@ -86,8 +86,30 @@ def entrenar_modelo(modelo, X_train_tensor, y_train_tensor, criterion, optimizer
 
 entrenar_modelo(modelo, X_train_tensor, y_train_tensor, criterion, optimizer)
 
+# Recomendar productos para múltiples clientes y guardar en un archivo CSV
+clientes = [1, 2, 3, 4, 5]
+recomendaciones = []
 
-# Ejemplo de recomendación de varios productos para un cliente
-X_cliente_ejemplo = X_test.iloc[0]  # Utilizamos el primer cliente de los datos de prueba como ejemplo
-productos_recomendados = recomendar_varios_productos(modelo, X_cliente_ejemplo, nombre_productos, n=5)
-print("Productos recomendados para el cliente:", productos_recomendados)
+for cliente in clientes:
+    # Filtrar datos del cliente
+    X_cliente = X_test[X_test['id_cliente'] == cliente]
+    if X_cliente.empty:  # Si no hay datos del cliente en el conjunto de prueba
+        X_cliente = X_train[X_train['id_cliente'] == cliente]
+    
+    if not X_cliente.empty:
+        # Obtener recomendaciones para el cliente
+        productos_recomendados = recomendar_varios_productos(modelo, X_cliente.iloc[0], nombre_productos, n=5)
+        recomendaciones.append({'id_cliente': cliente, 'recomendaciones': productos_recomendados})
+        print(f"Recomendaciones para el cliente {cliente}: {productos_recomendados}")
+    else:
+        print(f"No hay suficientes datos para el cliente {cliente} en los conjuntos de entrenamiento y prueba.")
+
+# Guardar recomendaciones en un archivo CSV
+recomendaciones_df = pd.DataFrame(recomendaciones)
+recomendaciones_df.to_csv("/home/penguin/Hackaton/data/recomendaciones.csv", index=False)
+
+print("Recomendaciones generadas y guardadas en recomendaciones.csv")
+
+
+
+

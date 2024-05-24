@@ -1,64 +1,52 @@
-import smtplib  # Importa el módulo smtplib para enviar correos electrónicos usando el protocolo SMTP.
-from email.mime.multipart import MIMEMultipart  # Importa la clase MIMEMultipart del módulo email.mime.multipart para crear un mensaje de correo con partes múltiples.
-from email.mime.text import MIMEText  # Importa la clase MIMEText del módulo email.mime.text para crear partes de texto del mensaje de correo.
-import pandas as pd  # Importa la biblioteca pandas con el alias pd para manipulación y análisis de datos.
-from jinja2 import Template  # Importa la clase Template del módulo jinja2 para renderizar plantillas de texto.
-from recomendar_productos import recomendar_productos  # Importa la función recomendar_productos del módulo recomendar_productos para generar recomendaciones de productos personalizadas.
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import pandas as pd
+from jinja2 import Template
 
-
+# Función para cargar datos desde archivos CSV
 def cargar_datos():
-    # Cargar los datos desde los archivos CSV
     clientes_df = pd.read_csv('data/clientes.csv')
-    compras_df = pd.read_csv('data/compras.csv')
-    inventario_df = pd.read_csv('data/inventario.csv')
-    return clientes_df, compras_df, inventario_df
+    recomendaciones_df = pd.read_csv('data/recomendaciones.csv')
+    return clientes_df, recomendaciones_df
 
-def enviar_correo(cliente_email, productos_recomendados):
-    # Configurar el correo electrónico saliente
-    from_email = "iapenguinhackaton@hotmail.com"
-    from_password = "ABC45678"  # Por favor, reemplazar por la contraseña real
+
+# Función para enviar correo electrónico
+def enviar_correo(cliente_nombre, cliente_email, productos_recomendados):
+    from_email = "iapenguinhackaton@gmail.com"
+    from_password = "tdtd nkff nxyy pjjs"
     subject = "Recomendaciones de Productos Personalizadas"
-
-    # Cargar la plantilla de correo
     with open('templates/email_template.html') as file_:
         template = Template(file_.read())
-
-    # Renderizar la plantilla con los productos recomendados
-    email_content = template.render(productos=productos_recomendados.index)
-
-    # Crear el mensaje de correo
+    # Saludo personalizado con el nombre del cliente
+    saludo = f"Hola {cliente_nombre}! Creemos que te podrían interesar estos productos."
+    email_content = template.render(saludo=saludo, productos=productos_recomendados)
     msg = MIMEMultipart()
     msg['From'] = from_email
     msg['To'] = cliente_email
     msg['Subject'] = subject
     msg.attach(MIMEText(email_content, 'html'))
-
-    # Enviar el correo electrónico usando SMTP
-    server = smtplib.SMTP('smtp.office365.com', 587)
+    server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     server.login(from_email, from_password)
     server.send_message(msg)
     server.quit()
 
-def enviar_correos_a_todos_los_clientes(clientes_df, compras_df, inventario_df):
-    # Recorrer todos los clientes y enviar recomendaciones
+
+
+# Función para enviar correos a todos los clientes
+def enviar_correos_a_todos_los_clientes(clientes_df, recomendaciones_df):
     for _, cliente in clientes_df.iterrows():
         cliente_id = cliente['id_cliente']
+        cliente_nombre = cliente['nombre']
         cliente_email = cliente['correo_electronico']
-        
-        # Obtener recomendaciones de productos para el cliente actual
-        productos_recomendados = recomendar_productos(cliente_id, compras_df, inventario_df)
-        
-        # Enviar correo con las recomendaciones
-        enviar_correo(cliente_email, productos_recomendados)
+        productos_recomendados = recomendaciones_df[recomendaciones_df['id_cliente'] == cliente_id]['recomendaciones'].values[0]
+        enviar_correo(cliente_nombre, cliente_email, productos_recomendados.split(','))
+        print(f"Correo enviado a {cliente_nombre} ({cliente_email})")
 
 if __name__ == "__main__":
-    # Cargar los datos
-    clientes_df, compras_df, inventario_df = cargar_datos()
-    
-    # Verificar si el nombre de la columna 'correo_electronico' está presente
+    clientes_df, recomendaciones_df = cargar_datos()
     if 'correo_electronico' in clientes_df.columns:
-        # Enviar correos a todos los clientes
-        enviar_correos_a_todos_los_clientes(clientes_df, compras_df, inventario_df)
+        enviar_correos_a_todos_los_clientes(clientes_df, recomendaciones_df)
     else:
         print("El nombre de la columna 'correo_electronico' no está presente en clientes_df.")
