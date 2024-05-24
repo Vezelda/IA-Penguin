@@ -15,7 +15,7 @@ def cargar_datos():
 def enviar_correo(cliente_nombre, cliente_email, productos_recomendados):
     from_email = "iapenguinhackaton@gmail.com"
     from_password = "tdtd nkff nxyy pjjs"
-    subject = "Recomendaciones de Productos Personalizadas"
+    subject = "Tu proxima compra esta aqui!"
     with open('templates/email_template.html') as file_:
         template = Template(file_.read())
     # Saludo personalizado con el nombre del cliente
@@ -31,8 +31,6 @@ def enviar_correo(cliente_nombre, cliente_email, productos_recomendados):
     server.login(from_email, from_password)
     server.send_message(msg)
     server.quit()
-
-
 
 # Función para enviar correos a todos los clientes
 def enviar_correos_a_todos_los_clientes(clientes_df, recomendaciones_df):
@@ -50,3 +48,4 @@ if __name__ == "__main__":
         enviar_correos_a_todos_los_clientes(clientes_df, recomendaciones_df)
     else:
         print("El nombre de la columna 'correo_electronico' no está presente en clientes_df.")
+

@@ -109,7 +109,3 @@ recomendaciones_df = pd.DataFrame(recomendaciones)
 recomendaciones_df.to_csv("/home/penguin/Hackaton/data/recomendaciones.csv", index=False)
 
 print("Recomendaciones generadas y guardadas en recomendaciones.csv")
-
-
-
-
